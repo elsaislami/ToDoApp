@@ -17,6 +17,17 @@ end
 target 'ToDoApp' do
   config = use_native_modules!
 
+  pod 'FirebaseCoreInternal', :modular_headers => true
+
+  # Comment the next line if you don't want to use dynamic frameworks
+  use_frameworks!
+
+  # Pods for YourProjectName
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
+  pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.
