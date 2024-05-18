@@ -1,19 +1,25 @@
+// RegisterScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-// import auth from '@react-native-firebase/auth';
+import { auth } from '../config/firebase'; 
+import { useNavigation } from '@react-navigation/native';
 
 const RegisterScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   const handleRegister = async () => {
-    // try {
-    //   await auth().createUserWithEmailAndPassword(email, password);
-    //   console.log('User registered successfully!');
-    //   // Navigate to your desired screen upon successful registration
-    // } catch (error) {
-    //   console.error('Registration failed:', error);
-    // }
+    try {
+      console.log(email, password);
+      const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+      console.log("ELSAAAAA", userCredential.user, userCredential);
+      navigation.navigate('Login');
+    } catch (error) {
+      console.log("Error", error.message);
+      setError(error.message);
+    }
   };
 
   return (
@@ -33,6 +39,7 @@ const RegisterScreen = () => {
         style={styles.input}
       />
       <Button title="Register" onPress={handleRegister} />
+      {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
     </View>
   );
 };
