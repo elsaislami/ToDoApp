@@ -14,7 +14,7 @@ export const getTodoData = createAsyncThunk(
     try {
       const res = await api.get('/todos');
       const data = res.data;
-      await AsyncStorage.setItem('@tasks', JSON.stringify(data)); // Save to AsyncStorage
+      await AsyncStorage.setItem('@tasks', JSON.stringify(data));
       return data;
     } catch (err) {
       return rejectWithValue('Todo data invalid');

@@ -28,6 +28,10 @@ target 'ToDoApp' do
   pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
   pod 'RNFBAuth', :path => '../node_modules/@react-native-firebase/auth'
 
+  use_frameworks! :linkage => :static
+  $RNFirebaseAsStaticFramework = true
+
+  
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, KeyboardAvoidingView, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, KeyboardAvoidingView, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { getTodoData, toggleTodo, addTodo, deleteTodo, editTodo, setTodos } from '../redux/todo';
+import { styles } from '../styles/HomeScreenStyles'; // Importing styles from the separate file
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -12,16 +13,17 @@ const HomeScreen = () => {
   const [editingTodo, setEditingTodo] = useState(null);
   const [editedTodoText, setEditedTodoText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [todosPerPage] = useState(10);
   const { todo_data } = useSelector(state => state.todo);
 
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const jsonValue = await AsyncStorage.getItem('@tasks');
-        if (jsonValue !== null) {
+        dispatch(getTodoData());
+        if (todo_data === null) {
+          const jsonValue = await AsyncStorage.getItem('@tasks');
           dispatch(setTodos(JSON.parse(jsonValue)));
-        } else {
-          dispatch(getTodoData());
         }
       } catch (error) {
         console.error('Error loading tasks from AsyncStorage:', error);
@@ -29,7 +31,6 @@ const HomeScreen = () => {
     };
     loadTasks();
   }, [dispatch]);
-
 
   const saveTasks = async (tasks) => {
     try {
@@ -105,24 +106,45 @@ const HomeScreen = () => {
     );
   };
 
+  const sortedTodoData = [...todo_data].reverse();
+  const indexOfLastTodo = currentPage * todosPerPage;
+  const indexOfFirstTodo = indexOfLastTodo - todosPerPage;
+  const currentTodos = sortedTodoData.slice(indexOfFirstTodo, indexOfLastTodo);
+
+  const renderFooter = () => (
+    <View style={styles.paginationContainer}>
+      <TouchableOpacity disabled={currentPage === 1} onPress={() => setCurrentPage(currentPage - 1)} style={styles.nextButton}>
+        <Text style={styles.actionButtonText}>{"<"}</Text>
+      </TouchableOpacity>
+      <Text style={styles.pageNumber}>..{currentPage}..</Text>
+      <TouchableOpacity onPress={() => setCurrentPage(currentPage + 1)} style={styles.nextButton}>
+        <Text style={styles.actionButtonText}>{">"}</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <Text style={styles.title}>Todo List</Text>
-      <FlatList
-        data={todo_data}
-        keyExtractor={item => item.id.toString()}
-        renderItem={renderTodoItem}
-        contentContainerStyle={styles.todoList}
-      />
+      <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+        <Text style={styles.title}>Todo List</Text>
+        <Button onPress={() => navigation.navigate('Login')} title="Logout" color="#8D6DE5" />
+      </View>
+
       <TextInput
         style={styles.input}
         value={newTodo}
         onChangeText={setNewTodo}
         placeholder="Add new todo"
+        placeholderTextColor="#888"
       />
-       <Button onPress={handleAddTodo} title="Add" />
-      <Button onPress={() => navigation.navigate('Login')} title="Logout" />
-
+      <Button onPress={handleAddTodo} title="Add" color="#8D6DE5" />
+      <FlatList
+        data={currentTodos}
+        keyExtractor={item => item.id.toString()}
+        renderItem={renderTodoItem}
+        contentContainerStyle={styles.todoList}
+        ListFooterComponent={renderFooter}
+      />
       <Modal
         animationType="slide"
         transparent={true}
@@ -135,6 +157,7 @@ const HomeScreen = () => {
             value={editedTodoText}
             onChangeText={setEditedTodoText}
             placeholder="Edit todo"
+            placeholderTextColor="#888"
           />
           <TouchableOpacity style={styles.modalButton} onPress={handleSaveEditedTodo}>
             <Text style={styles.actionButtonText}>Save</Text>
@@ -147,101 +170,6 @@ const HomeScreen = () => {
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  todoList: {
-    flexGrow: 1,
-    width: '100%',
-  },
-  todoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  todoContent: {
-    flex: 1,
-  },
-  todoTitle: {
-    fontSize: 18,
-  },
-  checkedText: {
-    textDecorationLine: 'line-through',
-    color: '#ccc',
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    marginRight: 10,
-  },
-  checked: {
-    backgroundColor: 'blue',
-    borderColor: 'blue',
-  },
-  editButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: 'blue',
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  deleteButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: 'red',
-    borderRadius: 5,
-    marginRight: 5,
-  },
-  actionButtonText: {
-    color: '#fff',
-  },
-  input: {
-    marginBottom: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalInput: {
-    width: '80%',
-    marginBottom: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    backgroundColor: '#fff',
-  },
-  modalButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    backgroundColor: 'black',
-    borderRadius: 5,
-    marginRight: 5,
-  },
-});
 
 export default HomeScreen;
 

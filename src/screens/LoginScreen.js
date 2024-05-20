@@ -1,56 +1,50 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
-// import auth from '@react-native-firebase/auth';
-
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { auth } from '../config/firebase';
+import { useNavigation } from '@react-navigation/native';
+import { styles } from '../styles/LoginScreenStyles'; 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
-    // try {
-    //   await auth().signInWithEmailAndPassword(email, password);
-    //   console.log('User logged in successfully!');
-    //   // Navigate to your desired screen upon successful login
-    // } catch (error) {
-    //   console.error('Login failed:', error);
-    // }
+    try {
+      const response = await auth.signInWithEmailAndPassword(email, password);
+      console.log('User logged in successfully!');
+      console.log(response);
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Login failed:', error);
+      setError(error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text>Login</Text>
+      <Text style={styles.title}>Login</Text>
       <TextInput
         placeholder="Email"
+        placeholderTextColor="#ccc"
         value={email}
         onChangeText={setEmail}
         style={styles.input}
       />
       <TextInput
         placeholder="Password"
+        placeholderTextColor="#ccc"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
         style={styles.input}
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  input: {
-    width: '80%',
-    padding: 10,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-  },
-});
 
 export default LoginScreen;
