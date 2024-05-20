@@ -129,7 +129,7 @@ const HomeScreen = () => {
         <Text style={styles.title}>Todo List</Text>
         <Button onPress={() => navigation.navigate('Login')} title="Logout" color="#8D6DE5" />
       </View>
-
+  <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between"}}> 
       <TextInput
         style={styles.input}
         value={newTodo}
@@ -137,7 +137,11 @@ const HomeScreen = () => {
         placeholder="Add new todo"
         placeholderTextColor="#888"
       />
-      <Button onPress={handleAddTodo} title="Add" color="#8D6DE5" />
+      <TouchableOpacity style={styles.addButton} onPress={handleAddTodo}>
+        <Text style={styles.actionButtonText}>+</Text>
+      </TouchableOpacity>
+      {/* <Button  onPress={handleAddTodo} title="+" color="#8D6DE5" /> */}
+      </View>
       <FlatList
         data={currentTodos}
         keyExtractor={item => item.id.toString()}
@@ -145,28 +149,29 @@ const HomeScreen = () => {
         contentContainerStyle={styles.todoList}
         ListFooterComponent={renderFooter}
       />
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <TextInput
-            style={styles.modalInput}
-            value={editedTodoText}
-            onChangeText={setEditedTodoText}
-            placeholder="Edit todo"
-            placeholderTextColor="#888"
-          />
-          <TouchableOpacity style={styles.modalButton} onPress={handleSaveEditedTodo}>
-            <Text style={styles.actionButtonText}>Save</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
-            <Text style={styles.actionButtonText}>Cancel</Text>
-          </TouchableOpacity>
-        </View>
-      </Modal>
+     <Modal
+  animationType="slide"
+  transparent={true}
+  visible={modalVisible}
+  onRequestClose={() => setModalVisible(false)}
+>
+    <View style={styles.modalContainer}>
+      <TextInput
+        style={styles.modalInput}
+        value={editedTodoText}
+        onChangeText={setEditedTodoText}
+        placeholder="Edit todo"
+        placeholderTextColor="#888"
+      />
+      <TouchableOpacity style={styles.modalButton} onPress={handleSaveEditedTodo}>
+        <Text style={styles.actionButtonText}>Save</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.modalButton} onPress={() => setModalVisible(false)}>
+        <Text style={styles.actionButtonText}>Cancel</Text>
+      </TouchableOpacity>
+    </View>
+</Modal>
+
     </KeyboardAvoidingView>
   );
 };

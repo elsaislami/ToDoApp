@@ -54,6 +54,16 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 5,
   },
+  addButton: {
+    alignContent: "center",
+    // paddingHorizontal: 10,
+    // paddingVertical: 5,
+    padding: 10,
+    backgroundColor: '#8D6DE5',
+    borderRadius: 10,
+    // marginRight: 5,
+    height: 40
+  },
   deleteButton: {
     paddingHorizontal: 10,
     paddingVertical: 5,
@@ -73,12 +83,13 @@ export const styles = StyleSheet.create({
     borderRadius: 5,
     color: '#ffffff',
     backgroundColor: '#333',
+    width: "90%"
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
   modalInput: {
     width: '80%',
@@ -97,7 +108,9 @@ export const styles = StyleSheet.create({
     backgroundColor: '#8D6DE5',
     borderRadius: 5,
     marginRight: 5,
+    marginVertical: 5
   },
+
   paginationContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
